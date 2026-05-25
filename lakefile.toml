@@ -1,0 +1,18 @@
+name = "productinvariants"
+version = "1.0.0-preprint"
+keywords = ["math", "formalization", "product-integrals", "lean"]
+defaultTargets = ["ProductInvariants"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0-rc2"
+
+[[lean_lib]]
+name = "ProductInvariants"
