@@ -2,6 +2,7 @@ import ProductInvariants.Finite.Product
 import ProductInvariants.Finite.Integral
 import ProductInvariants.Finite.Monotonicity
 import ProductInvariants.Finite.PowersetExpansion
+import ProductInvariants.Finite.Moments
 import ProductInvariants.Finite.Structural
 import ProductInvariants.Finite.PairInteraction
 import ProductInvariants.Directed.Predicate
@@ -12,4 +13,7 @@ import ProductInvariants.Prime.ErrorBounds
 import ProductInvariants.Prime.TailBound
 import ProductInvariants.Cube.SignedCube
 import ProductInvariants.Cube.Fibers
+import ProductInvariants.Eta.FiniteMoments
+import ProductInvariants.Eta.ClosedForms
+import ProductInvariants.Eta.GlasserCertified
 import ProductInvariants.Certified.PolynomialIntegral

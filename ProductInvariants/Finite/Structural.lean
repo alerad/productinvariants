@@ -76,6 +76,10 @@ noncomputable def sharpSymmDiffDist (S T : Finset ℕ) : ℝ :=
 noncomputable def looseSymmDiffDist (S T : Finset ℕ) : ℝ :=
   ∑ q ∈ S ∆ T, (1 : ℝ) / (q + 1)
 
+/-- Symmetric-difference distance induced by a common prefix kernel. -/
+noncomputable def commonPrefixSymmDiffDist (R S T : Finset ℕ) : ℝ :=
+  ∑ q ∈ S ∆ T, commonPrefixKernel R q
+
 theorem sharpSymmDiffDist_nonneg (S T : Finset ℕ) :
     0 ≤ sharpSymmDiffDist S T := by
   unfold sharpSymmDiffDist
@@ -85,6 +89,17 @@ theorem looseSymmDiffDist_nonneg (S T : Finset ℕ) :
     0 ≤ looseSymmDiffDist S T := by
   unfold looseSymmDiffDist
   exact Finset.sum_nonneg (fun q _hq => by positivity)
+
+theorem commonPrefixKernel_nonneg (R : Finset ℕ) (q : ℕ) :
+    0 ≤ commonPrefixKernel R q := by
+  unfold commonPrefixKernel
+  exact intervalIntegral.integral_nonneg (by norm_num)
+    (fun _u hu => mul_nonneg (phaseProduct_nonneg_on_Icc R hu) (pow_nonneg hu.1 q))
+
+theorem commonPrefixSymmDiffDist_nonneg (R S T : Finset ℕ) :
+    0 ≤ commonPrefixSymmDiffDist R S T := by
+  unfold commonPrefixSymmDiffDist
+  exact Finset.sum_nonneg (fun q _hq => commonPrefixKernel_nonneg R q)
 
 lemma sum_kernel_le_sum_symmDiff_left (S T : Finset ℕ) :
     (∑ q ∈ S \ T, (2 : ℝ) / ((q + 1) * (q + 3))) ≤
@@ -119,6 +134,91 @@ lemma sum_loose_kernel_le_sum_symmDiff_right (S T : Finset ℕ) :
     (by
       intro q _hq _hqnot
       positivity)
+
+lemma sum_commonPrefixKernel_le_sum_symmDiff_left (R S T : Finset ℕ) :
+    (∑ q ∈ S \ T, commonPrefixKernel R q) ≤ commonPrefixSymmDiffDist R S T := by
+  unfold commonPrefixSymmDiffDist
+  exact Finset.sum_le_sum_of_subset_of_nonneg Finset.symmDiff_subset_sdiff
+    (by
+      intro q _hq _hqnot
+      exact commonPrefixKernel_nonneg R q)
+
+lemma sum_commonPrefixKernel_le_sum_symmDiff_right (R S T : Finset ℕ) :
+    (∑ q ∈ T \ S, commonPrefixKernel R q) ≤ commonPrefixSymmDiffDist R S T := by
+  unfold commonPrefixSymmDiffDist
+  exact Finset.sum_le_sum_of_subset_of_nonneg Finset.symmDiff_subset_sdiff'
+    (by
+      intro q _hq _hqnot
+      exact commonPrefixKernel_nonneg R q)
+
+/--
+Common-prefix Lipschitz bound.
+
+If `R` is contained in the common core of `S` and `T`, then the symmetric
+difference is measured with the stronger kernel obtained by multiplying by
+`phaseProduct R`.
+-/
+theorem phaseIntegral_lipschitz_commonPrefix {R S T : Finset ℕ}
+    (hR : R ⊆ S ∩ T) :
+    |phaseIntegral S - phaseIntegral T| ≤ commonPrefixSymmDiffDist R S T := by
+  rw [abs_sub_le_iff]
+  constructor
+  · have hS_union : S ⊆ S ∪ T := Finset.subset_union_left
+    have hR_S : R ⊆ S := fun q hq => (Finset.mem_inter.mp (hR hq)).1
+    have hcommon :
+        phaseIntegral S - phaseIntegral (S ∪ T) ≤
+          ∑ q ∈ (S ∪ T) \ S, commonPrefixKernel R q :=
+      common_prefix_error_bound hR_S hS_union
+    have hTu : phaseIntegral (S ∪ T) ≤ phaseIntegral T :=
+      phaseIntegral_antitone Finset.subset_union_right
+    have hdiff : phaseIntegral S - phaseIntegral T ≤
+        phaseIntegral S - phaseIntegral (S ∪ T) := by linarith
+    have hsum_eq :
+        (∑ q ∈ (S ∪ T) \ S, commonPrefixKernel R q) =
+          ∑ q ∈ T \ S, commonPrefixKernel R q := by
+      refine Finset.sum_congr ?_ (fun q _ => rfl)
+      ext q
+      constructor
+      · intro hq
+        have hq' := Finset.mem_sdiff.mp hq
+        exact Finset.mem_sdiff.mpr ⟨by
+          rcases (Finset.mem_union.mp hq'.1) with hqS | hqT
+          · exact False.elim (hq'.2 hqS)
+          · exact hqT, hq'.2⟩
+      · intro hq
+        have hq' := Finset.mem_sdiff.mp hq
+        exact Finset.mem_sdiff.mpr ⟨Finset.mem_union_right S hq'.1, hq'.2⟩
+    exact hdiff.trans (hcommon.trans (by
+      rw [hsum_eq]
+      exact sum_commonPrefixKernel_le_sum_symmDiff_right R S T))
+  · have hT_union : T ⊆ S ∪ T := Finset.subset_union_right
+    have hR_T : R ⊆ T := fun q hq => (Finset.mem_inter.mp (hR hq)).2
+    have hcommon :
+        phaseIntegral T - phaseIntegral (S ∪ T) ≤
+          ∑ q ∈ (S ∪ T) \ T, commonPrefixKernel R q :=
+      common_prefix_error_bound hR_T hT_union
+    have hSu : phaseIntegral (S ∪ T) ≤ phaseIntegral S :=
+      phaseIntegral_antitone Finset.subset_union_left
+    have hdiff : phaseIntegral T - phaseIntegral S ≤
+        phaseIntegral T - phaseIntegral (S ∪ T) := by linarith
+    have hsum_eq :
+        (∑ q ∈ (S ∪ T) \ T, commonPrefixKernel R q) =
+          ∑ q ∈ S \ T, commonPrefixKernel R q := by
+      refine Finset.sum_congr ?_ (fun q _ => rfl)
+      ext q
+      constructor
+      · intro hq
+        have hq' := Finset.mem_sdiff.mp hq
+        exact Finset.mem_sdiff.mpr ⟨by
+          rcases (Finset.mem_union.mp hq'.1) with hqS | hqT
+          · exact hqS
+          · exact False.elim (hq'.2 hqT), hq'.2⟩
+      · intro hq
+        have hq' := Finset.mem_sdiff.mp hq
+        exact Finset.mem_sdiff.mpr ⟨Finset.mem_union_left T hq'.1, hq'.2⟩
+    exact hdiff.trans (hcommon.trans (by
+      rw [hsum_eq]
+      exact sum_commonPrefixKernel_le_sum_symmDiff_left R S T))
 
 /--
 Universal finite modulus of continuity.

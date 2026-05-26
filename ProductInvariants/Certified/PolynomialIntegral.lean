@@ -563,6 +563,132 @@ theorem prime_phase_rational_certificate {N m : ℕ}
     rw [phaseIntegral_primeSetUpTo_eq_rat] at hΛ
     exact hΛ
 
+set_option linter.style.nativeDecide false in
+theorem primePhaseIntegralRat_3_eq :
+    primePhaseIntegralRat 3 = (7 : ℚ) / 12 := by
+  native_decide
+
+set_option linter.style.nativeDecide false in
+theorem sandwichErrorIntegralRat_3_5_eq :
+    sandwichErrorIntegralRat 3 5 = (1 : ℚ) / 18 := by
+  native_decide
+
+set_option linter.style.nativeDecide false in
+theorem sandwichLowerRat_3_5_eq :
+    sandwichLowerRat 3 5 = (19 : ℚ) / 36 := by
+  native_decide
+
+theorem sandwichLowerRat_3_5_le_Lambda :
+    (sandwichLowerRat 3 5 : ℝ) ≤ Lambda := by
+  apply sandwichLowerRat_le_Lambda_of_tail_ge (N := 3) (m := 5) (by decide) (by norm_num)
+  intro p hp_prime hp_gt
+  have hp_ge4 : 4 ≤ p := Nat.succ_le_of_lt hp_gt
+  rcases Nat.lt_or_eq_of_le hp_ge4 with hp4 | hp4
+  · exact Nat.succ_le_of_lt hp4
+  · exfalso
+    rw [← hp4] at hp_prime
+    norm_num at hp_prime
+
+/-- Elementary rational separation of the prime limit from one half. -/
+theorem Lambda_gt_one_half :
+    (1 : ℝ) / 2 < Lambda := by
+  have hcert := sandwichLowerRat_3_5_le_Lambda
+  rw [sandwichLowerRat_3_5_eq] at hcert
+  norm_num at hcert
+  have hgt : (1 : ℝ) / 2 < (19 : ℝ) / 36 := by norm_num
+  exact hgt.trans_le hcert
+
+theorem Lambda_elementary_interval_3_5 :
+    (19 : ℝ) / 36 ≤ Lambda ∧ Lambda ≤ (7 : ℝ) / 12 := by
+  constructor
+  · have hcert := sandwichLowerRat_3_5_le_Lambda
+    rw [sandwichLowerRat_3_5_eq] at hcert
+    norm_num at hcert
+    exact hcert
+  · have hΛ : Lambda ≤ phaseIntegral (primeSetUpTo 3) :=
+      Lambda_le_prime_truncation 3
+    rw [phaseIntegral_primeSetUpTo_eq_rat, primePhaseIntegralRat_3_eq] at hΛ
+    norm_num at hΛ
+    exact hΛ
+
+set_option linter.style.nativeDecide false in
+theorem primePhaseIntegralRat_5_eq :
+    primePhaseIntegralRat 5 = (445 : ℚ) / 792 := by
+  native_decide
+
+set_option linter.style.nativeDecide false in
+theorem sandwichLowerRat_5_7_eq :
+    sandwichLowerRat 5 7 = (1015 : ℚ) / 1872 := by
+  native_decide
+
+theorem sandwichLowerRat_5_7_le_Lambda :
+    (sandwichLowerRat 5 7 : ℝ) ≤ Lambda := by
+  apply sandwichLowerRat_le_Lambda_of_tail_ge (N := 5) (m := 7) (by decide) (by norm_num)
+  intro p hp_prime hp_gt
+  have hp_ge6 : 6 ≤ p := Nat.succ_le_of_lt hp_gt
+  rcases Nat.lt_or_eq_of_le hp_ge6 with hp6 | hp6
+  · exact Nat.succ_le_of_lt hp6
+  · exfalso
+    rw [← hp6] at hp_prime
+    norm_num at hp_prime
+
+theorem Lambda_elementary_interval_5_7 :
+    (1015 : ℝ) / 1872 ≤ Lambda ∧ Lambda ≤ (445 : ℝ) / 792 := by
+  constructor
+  · have hcert := sandwichLowerRat_5_7_le_Lambda
+    rw [sandwichLowerRat_5_7_eq] at hcert
+    norm_num at hcert
+    exact hcert
+  · have hΛ : Lambda ≤ phaseIntegral (primeSetUpTo 5) :=
+      Lambda_le_prime_truncation 5
+    rw [phaseIntegral_primeSetUpTo_eq_rat, primePhaseIntegralRat_5_eq] at hΛ
+    norm_num at hΛ
+    exact hΛ
+
+set_option linter.style.nativeDecide false in
+theorem primePhaseIntegralRat_7_eq :
+    primePhaseIntegralRat 7 = (133 : ℚ) / 240 := by
+  native_decide
+
+set_option linter.style.nativeDecide false in
+theorem sandwichLowerRat_7_11_eq :
+    sandwichLowerRat 7 11 = (4212299 : ℚ) / 7674480 := by
+  native_decide
+
+theorem sandwichLowerRat_7_11_le_Lambda :
+    (sandwichLowerRat 7 11 : ℝ) ≤ Lambda := by
+  apply sandwichLowerRat_le_Lambda_of_tail_ge (N := 7) (m := 11) (by decide) (by norm_num)
+  intro p hp_prime hp_gt
+  have hp_ge8 : 8 ≤ p := Nat.succ_le_of_lt hp_gt
+  rcases Nat.lt_or_eq_of_le hp_ge8 with hp8 | hp8
+  · have hp_ge9 : 9 ≤ p := Nat.succ_le_of_lt hp8
+    rcases Nat.lt_or_eq_of_le hp_ge9 with hp9 | hp9
+    · have hp_ge10 : 10 ≤ p := Nat.succ_le_of_lt hp9
+      rcases Nat.lt_or_eq_of_le hp_ge10 with hp10 | hp10
+      · exact Nat.succ_le_of_lt hp10
+      · exfalso
+        rw [← hp10] at hp_prime
+        norm_num at hp_prime
+    · exfalso
+      rw [← hp9] at hp_prime
+      norm_num at hp_prime
+  · exfalso
+    rw [← hp8] at hp_prime
+    norm_num at hp_prime
+
+theorem Lambda_elementary_interval_7_11 :
+    (4212299 : ℝ) / 7674480 ≤ Lambda ∧ Lambda ≤ (133 : ℝ) / 240 := by
+  constructor
+  · have hcert := sandwichLowerRat_7_11_le_Lambda
+    rw [sandwichLowerRat_7_11_eq] at hcert
+    norm_num at hcert
+    exact hcert
+  · have hΛ : Lambda ≤ phaseIntegral (primeSetUpTo 7) :=
+      Lambda_le_prime_truncation 7
+    rw [phaseIntegral_primeSetUpTo_eq_rat, primePhaseIntegralRat_7_eq] at hΛ
+    norm_num at hΛ
+    exact hΛ
+
 theorem sandwichLowerRat_101_103_le_Lambda :
     (sandwichLowerRat 101 103 : ℝ) ≤ Lambda := by
   apply sandwichLowerRat_le_Lambda_of_tail_ge (N := 101) (m := 103) (by decide) (by norm_num)

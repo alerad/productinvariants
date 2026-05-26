@@ -14,5 +14,10 @@ name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.30.0-rc2"
 
+[[require]]
+name = "leancert"
+git = "https://github.com/alerad/leancert"
+rev = "main"
+
 [[lean_lib]]
 name = "ProductInvariants"
