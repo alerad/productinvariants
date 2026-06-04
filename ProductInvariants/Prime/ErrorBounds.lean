@@ -1,4 +1,5 @@
 import ProductInvariants.Finite.Monotonicity
+import ProductInvariants.Finite.KernelCalculus
 
 open MeasureTheory intervalIntegral
 
@@ -153,10 +154,6 @@ lemma integral_one_sub_sq_mul_pow (q : ℕ) :
   rw [hcongr, intervalIntegral.integral_sub hint1 hint2, integral_pow, integral_pow]
   norm_num
   ring
-
-/-- Kernel attached to a common prefix `R`. -/
-noncomputable def commonPrefixKernel (R : Finset ℕ) (q : ℕ) : ℝ :=
-  ∫ u in (0 : ℝ)..1, phaseProduct R u * u ^ q
 
 lemma common_prefix_error_pointwise {R S T : Finset ℕ} (hRS : R ⊆ S) (hST : S ⊆ T)
     {u : ℝ} (hu : u ∈ Set.Icc (0 : ℝ) 1) :
