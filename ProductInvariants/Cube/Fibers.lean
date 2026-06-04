@@ -8,6 +8,17 @@ def subsetSumFiber (S : Finset ℕ) (m : ℕ) : Finset (Finset ℕ) :=
 def signedFiberCoeff (S : Finset ℕ) (m : ℕ) : ℝ :=
   ∑ A ∈ subsetSumFiber S m, subsetSign A
 
+/-- Unsigned cardinality of a subset-sum co-occurrence fiber. -/
+def coocFiberCard (S : Finset ℕ) (m : ℕ) : ℕ :=
+  (subsetSumFiber S m).card
+
+theorem signedFiberCoeff_eq_sum_powerset_ite (S : Finset ℕ) (m : ℕ) :
+    signedFiberCoeff S m =
+      ∑ A ∈ S.powerset, if subsetSum A = m then subsetSign A else 0 := by
+  classical
+  unfold signedFiberCoeff subsetSumFiber
+  rw [Finset.sum_filter]
+
 theorem mem_subsetSumFiber {S A : Finset ℕ} {m : ℕ} :
     A ∈ subsetSumFiber S m ↔ A ⊆ S ∧ subsetSum A = m := by
   simp [subsetSumFiber]
@@ -85,6 +96,62 @@ theorem phaseIntegral_eq_signedFiberCoeff_sum (S : Finset ℕ) :
   rw [intervalIntegral.integral_const_mul, integral_pow]
   norm_num
   ring
+
+/--
+Coefficient-level insertion recurrence.
+
+Adjoining a new exponent `q` applies the finite-difference operator
+`c(m) ↦ c(m) - c(m-q)` to the signed subset-sum fiber coefficients.
+-/
+theorem signedFiberCoeff_insert_eq_sub
+    (S : Finset ℕ) {q : ℕ} (hq : q ∉ S) (m : ℕ) :
+    signedFiberCoeff (insert q S) m =
+      signedFiberCoeff S m -
+        if q ≤ m then signedFiberCoeff S (m - q) else 0 := by
+  classical
+  rw [signedFiberCoeff_eq_sum_powerset_ite]
+  rw [Finset.sum_powerset_insert hq]
+  rw [← signedFiberCoeff_eq_sum_powerset_ite S m]
+  by_cases hm : q ≤ m
+  · have hsecond :
+        (∑ A ∈ S.powerset,
+          if subsetSum (insert q A) = m then subsetSign (insert q A) else 0) =
+          - signedFiberCoeff S (m - q) := by
+      rw [signedFiberCoeff_eq_sum_powerset_ite, ← Finset.sum_neg_distrib]
+      refine Finset.sum_congr rfl ?_
+      intro A hA
+      have hAS : A ⊆ S := Finset.mem_powerset.mp hA
+      have hqA : q ∉ A := fun h => hq (hAS h)
+      have hsum : subsetSum (insert q A) = q + subsetSum A := by
+        simp [subsetSum, hqA]
+      have hsign : subsetSign (insert q A) = - subsetSign A := by
+        simp [subsetSign, hqA, pow_succ]
+      rw [hsum, hsign]
+      by_cases hAm : subsetSum A = m - q
+      · have hmA : q + subsetSum A = m := by omega
+        rw [if_pos hmA, if_pos hAm]
+      · have hmA : q + subsetSum A ≠ m := by omega
+        rw [if_neg hmA, if_neg hAm]
+        ring
+    rw [hsecond]
+    simp [hm]
+    ring
+  · have hsecond :
+        (∑ A ∈ S.powerset,
+          if subsetSum (insert q A) = m then subsetSign (insert q A) else 0) =
+          0 := by
+      rw [Finset.sum_eq_zero]
+      intro A hA
+      have hAS : A ⊆ S := Finset.mem_powerset.mp hA
+      have hqA : q ∉ A := fun h => hq (hAS h)
+      have hsum : subsetSum (insert q A) = q + subsetSum A := by
+        simp [subsetSum, hqA]
+      have hmA : subsetSum (insert q A) ≠ m := by
+        rw [hsum]
+        omega
+      simp [hmA]
+    rw [hsecond]
+    simp [hm]
 
 /-- In the fiber `m = 5` for `{2, 3, 5}`, `{5}` and `{2, 3}` cancel. -/
 theorem signedFiberCoeff_five_cancel :

@@ -1,8 +1,15 @@
 import ProductInvariants.Finite.Product
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 open MeasureTheory intervalIntegral
 
 namespace ProductInvariants
+
+theorem continuous_phaseProduct (S : Finset ℕ) :
+    Continuous fun u : ℝ => phaseProduct S u := by
+  unfold phaseProduct
+  exact continuous_finset_prod S
+    (fun n _hn => continuous_const.sub (continuous_id.pow n))
 
 /-- The finite phase integral attached to a set of exponents. -/
 noncomputable def phaseIntegral (S : Finset ℕ) : ℝ :=

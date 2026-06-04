@@ -3,6 +3,8 @@ import Mathlib.RingTheory.Polynomial.Basic
 
 open MeasureTheory intervalIntegral Polynomial
 
+set_option maxRecDepth 100000
+
 namespace ProductInvariants.Certified
 
 /-- The directed prime constant is below every finite prime truncation. -/
@@ -460,8 +462,8 @@ theorem sandwichLowerFun_101_103_le_prime_truncation (M : ℕ)
       rcases Nat.lt_or_eq_of_le hp_ge_102 with hp102 | hp102
       · exact Nat.succ_le_of_lt hp102
       · exfalso
-        rw [← hp102] at hp_prime
-        norm_num at hp_prime
+        subst p
+        exact (by decide : ¬ Nat.Prime 102) hp_prime
     · exact Finset.subset_union_right
     · intro p hp
       rcases Finset.mem_union.mp hp with hpM | hp101
@@ -586,8 +588,8 @@ theorem sandwichLowerRat_3_5_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge4 with hp4 | hp4
   · exact Nat.succ_le_of_lt hp4
   · exfalso
-    rw [← hp4] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 4) hp_prime
 
 /-- Elementary rational separation of the prime limit from one half. -/
 theorem Lambda_gt_one_half :
@@ -629,8 +631,8 @@ theorem sandwichLowerRat_5_7_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge6 with hp6 | hp6
   · exact Nat.succ_le_of_lt hp6
   · exfalso
-    rw [← hp6] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 6) hp_prime
 
 theorem Lambda_elementary_interval_5_7 :
     (1015 : ℝ) / 1872 ≤ Lambda ∧ Lambda ≤ (445 : ℝ) / 792 := by
@@ -667,14 +669,14 @@ theorem sandwichLowerRat_7_11_le_Lambda :
       rcases Nat.lt_or_eq_of_le hp_ge10 with hp10 | hp10
       · exact Nat.succ_le_of_lt hp10
       · exfalso
-        rw [← hp10] at hp_prime
-        norm_num at hp_prime
+        subst p
+        exact (by decide : ¬ Nat.Prime 10) hp_prime
     · exfalso
-      rw [← hp9] at hp_prime
-      norm_num at hp_prime
+      subst p
+      exact (by decide : ¬ Nat.Prime 9) hp_prime
   · exfalso
-    rw [← hp8] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 8) hp_prime
 
 theorem Lambda_elementary_interval_7_11 :
     (4212299 : ℝ) / 7674480 ≤ Lambda ∧ Lambda ≤ (133 : ℝ) / 240 := by
@@ -697,8 +699,8 @@ theorem sandwichLowerRat_101_103_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge_102 with hp102 | hp102
   · exact Nat.succ_le_of_lt hp102
   · exfalso
-    rw [← hp102] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 102) hp_prime
 
 set_option linter.style.nativeDecide false in
 theorem primePhaseIntegralRat_101_lt :
@@ -743,8 +745,8 @@ theorem sandwichLowerRat_503_505_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge_504 with hp504 | hp504
   · exact Nat.succ_le_of_lt hp504
   · exfalso
-    rw [← hp504] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 504) hp_prime
 
 set_option linter.style.nativeDecide false in
 theorem primePhaseIntegralRat_503_lt :
@@ -794,8 +796,8 @@ theorem sandwichLowerRat_1009_1011_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge_1010 with hp1010 | hp1010
   · exact Nat.succ_le_of_lt hp1010
   · exfalso
-    rw [← hp1010] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 1010) hp_prime
 
 set_option linter.style.nativeDecide false in
 theorem primePhaseIntegralRat_1009_lt :
@@ -847,8 +849,8 @@ theorem sandwichLowerRat_2003_2005_le_Lambda :
   rcases Nat.lt_or_eq_of_le hp_ge_2004 with hp2004 | hp2004
   · exact Nat.succ_le_of_lt hp2004
   · exfalso
-    rw [← hp2004] at hp_prime
-    norm_num at hp_prime
+    subst p
+    exact (by decide : ¬ Nat.Prime 2004) hp_prime
 
 set_option linter.style.nativeDecide false in
 theorem primePhaseIntegralRat_2003_lt :

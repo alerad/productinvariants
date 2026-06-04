@@ -256,7 +256,12 @@ theorem evenExponentClosedForm_cert :
 theorem glasserRHSIntegerShift_zero_eq_allExponentClosedForm :
     glasserRHSIntegerShift 0 = allExponentClosedForm := by
   unfold glasserRHSIntegerShift allExponentClosedForm
+  have hsqrt9 : Real.sqrt (9 : ℝ) = 3 := by
+    exact (Real.sqrt_eq_iff_eq_sq (by norm_num) (by norm_num)).2 (by norm_num)
+  have hsqrt4 : Real.sqrt (4 : ℝ) = 2 := by
+    exact (Real.sqrt_eq_iff_eq_sq (by norm_num) (by norm_num)).2 (by norm_num)
   norm_num
+  rw [hsqrt9, hsqrt4]
   ring_nf
 
 /-- A certified explanation of the near miss: the even closed form is not `1 / sqrt 3`. -/

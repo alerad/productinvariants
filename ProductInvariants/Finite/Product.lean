@@ -1,4 +1,8 @@
-import Mathlib
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Tactic.Linarith
 
 namespace ProductInvariants
 
@@ -49,11 +53,5 @@ theorem phaseProduct_antitone {S T : Finset ℕ} (hST : S ⊆ T)
   exact Finset.prod_le_prod_of_subset_of_le_one hST
     (fun n _hn => one_sub_pow_nonneg_of_mem_Icc hu n)
     (fun n _hn _hns => one_sub_pow_le_one_of_mem_Icc hu n)
-
-theorem continuous_phaseProduct (S : Finset ℕ) :
-    Continuous fun u : ℝ => phaseProduct S u := by
-  unfold phaseProduct
-  exact continuous_finset_prod S
-    (fun n _hn => continuous_const.sub (continuous_id.pow n))
 
 end ProductInvariants
