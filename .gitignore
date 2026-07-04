@@ -16,3 +16,5 @@ paper_final/*.out
 paper_final/*.fls
 paper_final/*.fdb_latexmk
 paper_final/*.synctex.gz
+paper_final/
+.DS_Store
