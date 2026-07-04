@@ -1,6 +1,7 @@
 # Product-Integral Invariants
 
 [![Lean](https://github.com/alerad/productinvariants/actions/workflows/lean.yml/badge.svg)](https://github.com/alerad/productinvariants/actions/workflows/lean.yml)
+[![DOI](https://zenodo.org/badge/1249538983.svg)](https://doi.org/10.5281/zenodo.21191624)
 
 Lean 4 formalization accompanying the paper
 *An extremal product integral over finite primitive sets*.
