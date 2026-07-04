@@ -1,3 +1,5 @@
+experiments/
+/experiments
 /paper
 /scripts
 /.lake
@@ -8,3 +10,9 @@
 *.ilean
 *.c
 *.o
+paper_final/*.aux
+paper_final/*.log
+paper_final/*.out
+paper_final/*.fls
+paper_final/*.fdb_latexmk
+paper_final/*.synctex.gz

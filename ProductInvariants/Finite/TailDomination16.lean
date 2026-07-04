@@ -40,12 +40,15 @@ open Polynomial
 noncomputable def Q16poly : Polynomial ℚ := polyOfList Q16coeffs
 
 /-- `Q16poly` is strictly positive throughout `[0,1]` (real points), inherited
-from the once-and-for-all `native_decide` Bernstein certificate. -/
+from the once-and-for-all `native_decide` Bernstein certificate.  The two side
+conditions (nonempty list, nonzero leading coefficient) are discharged
+symbolically, so the only native evaluations are the two genuinely
+computational facts `Q16_bernLo_pos` and `C16coeffs_eq`. -/
 theorem Q16poly_pos_on_Icc {x : ℝ} (hx : x ∈ Set.Icc (0 : ℝ) 1) :
     0 < (Q16poly).aeval x := by
   apply aeval_pos_of_myBernLo_pos Q16coeffs
-  · native_decide
-  · native_decide
+  · unfold Q16coeffs; exact List.cons_ne_nil _ _
+  · norm_num [Q16coeffs]
   · exact Q16_bernLo_pos
   · exact hx
 

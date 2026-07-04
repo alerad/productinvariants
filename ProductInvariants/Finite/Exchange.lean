@@ -160,4 +160,34 @@ theorem phaseIntegral_exchange_multiple_lt {S : Finset ℕ} {p t : ℕ}
     omega
   exact phaseIntegral_replace_lt hp hm hpm hS
 
+/--
+**Inserting a fresh exponent strictly decreases `F`.**
+
+If `n` is absent from `S` and every exponent of `S` is `≥ 1`, then
+`F(S ∪ {n}) < F(S)`: the new factor `1 - u^n` is `< 1` on `(0,1)` while the
+remaining product stays strictly positive there. In particular the prime
+truncation values strictly decrease each time a new prime enters, which is what
+makes the infimum over finite antichains unattained.
+-/
+theorem phaseIntegral_insert_lt {S : Finset ℕ} {n : ℕ}
+    (hn : n ∉ S) (hS : ∀ m ∈ S, 1 ≤ m) :
+    phaseIntegral (insert n S) < phaseIntegral S := by
+  unfold phaseIntegral
+  refine integral_lt_integral_of_continuousOn_of_le_of_exists_lt (by norm_num)
+    (continuous_phaseProduct _).continuousOn (continuous_phaseProduct _).continuousOn ?_ ?_
+  · intro u hu
+    have hu' : u ∈ Set.Icc (0 : ℝ) 1 := Set.Ioc_subset_Icc_self hu
+    exact phaseProduct_antitone (Finset.subset_insert n S) hu'
+  · refine ⟨1 / 2, ?_, ?_⟩
+    · constructor <;> norm_num
+    · have hu : (1 / 2 : ℝ) ∈ Set.Ioo (0 : ℝ) 1 := by constructor <;> norm_num
+      rw [phaseProduct_insert hn]
+      have hP : 0 < phaseProduct S (1 / 2) := phaseProduct_pos_of_mem_Ioo hS hu
+      have hfac : 1 - (1 / 2 : ℝ) ^ n < 1 := by
+        have hpow : (0 : ℝ) < (1 / 2 : ℝ) ^ n := by positivity
+        linarith
+      calc (1 - (1 / 2 : ℝ) ^ n) * phaseProduct S (1 / 2)
+          < 1 * phaseProduct S (1 / 2) := mul_lt_mul_of_pos_right hfac hP
+        _ = phaseProduct S (1 / 2) := one_mul _
+
 end ProductInvariants

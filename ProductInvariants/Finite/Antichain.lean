@@ -1,4 +1,5 @@
 import ProductInvariants.Finite.BlockExchangeStep
+import ProductInvariants.Finite.Exchange
 import ProductInvariants.Finite.LambdaMin
 
 /-!
@@ -504,5 +505,66 @@ theorem lambda_eq_iInf_finiteAntichain :
               FiniteAntichainFamily) : Finset ℕ) :=
       ciInf_le hbdd _
     simpa [primeSetUpTo] using hle
+
+/-! ## Non-attainment: the infimum is strict at every finite antichain
+
+The prime truncation values strictly decrease each time a new prime enters
+(`phaseIntegral_insert_lt`), and there are infinitely many primes, so `Λ` lies
+*strictly* below every truncation value, hence strictly below `F[A]` for every
+finite divisibility antichain `A`.  The infimum in
+`lambda_eq_iInf_finiteAntichain` is therefore not attained. -/
+
+/-- **Prime truncations strictly decrease across a new prime.** If `q` is a
+prime exceeding `N`, then `F[primeSetUpTo q] < F[primeSetUpTo N]`. -/
+theorem phaseIntegral_primeSetUpTo_lt {N q : ℕ}
+    (hq : Nat.Prime q) (hNq : N < q) :
+    phaseIntegral (primeSetUpTo q) < phaseIntegral (primeSetUpTo N) := by
+  have hqmem : q ∉ primeSetUpTo N := fun h => by
+    have := (mem_primeSetUpTo.mp h).2; omega
+  have hsub : insert q (primeSetUpTo N) ⊆ primeSetUpTo q := by
+    intro a ha
+    rcases Finset.mem_insert.mp ha with rfl | haN
+    · exact mem_primeSetUpTo.mpr ⟨hq, le_rfl⟩
+    · obtain ⟨hpa, haN'⟩ := mem_primeSetUpTo.mp haN
+      exact mem_primeSetUpTo.mpr ⟨hpa, by omega⟩
+  have h1 : phaseIntegral (primeSetUpTo q)
+      ≤ phaseIntegral (insert q (primeSetUpTo N)) :=
+    phaseIntegral_antitone hsub
+  have h2 : phaseIntegral (insert q (primeSetUpTo N))
+      < phaseIntegral (primeSetUpTo N) :=
+    phaseIntegral_insert_lt hqmem
+      (fun m hm => (mem_primeSetUpTo.mp hm).1.one_lt.le)
+  exact lt_of_le_of_lt h1 h2
+
+/-- **`Λ` lies strictly below every prime truncation value.** Choose a prime
+`q > N` (infinitude of primes); then `Λ ≤ F[primeSetUpTo q] < F[primeSetUpTo N]`. -/
+theorem lambda_lt_phaseIntegral_primeSetUpTo (N : ℕ) :
+    Lambda < phaseIntegral (primeSetUpTo N) := by
+  obtain ⟨q, hqN, hq⟩ := Nat.exists_infinite_primes (N + 1)
+  have hle : Lambda ≤ phaseIntegral (primeSetUpTo q) := by
+    have h := directedPhaseIntegral_le_truncation Nat.Prime q
+    simpa [Lambda, primeSetUpTo] using h
+  exact lt_of_le_of_lt hle (phaseIntegral_primeSetUpTo_lt hq (by omega))
+
+/-- **Non-attainment (pointwise form).** `Λ < F[A]` for every finite
+divisibility antichain `A`: descend `A` to an all-prime antichain `Q`, embed `Q`
+in a prime truncation, and use the strict truncation bound. -/
+theorem lambda_lt_phaseIntegral_antichain {N : ℕ} {A : Finset ℕ}
+    (hA : IsDivAntichainIn N A) :
+    Lambda < phaseIntegral A := by
+  obtain ⟨Q, hall, hQanti, hpath⟩ := antichain_descends_to_allPrime hA
+  have hsub : Q ⊆ primeSetUpTo N := allPrime_subset_primeSetUpTo hall hQanti.1
+  have h1 : phaseIntegral (primeSetUpTo N) ≤ phaseIntegral Q :=
+    phaseIntegral_antitone hsub
+  have h2 : phaseIntegral Q ≤ phaseIntegral A :=
+    phaseIntegral_target_le_of_descentPath hpath
+  exact lt_of_lt_of_le (lambda_lt_phaseIntegral_primeSetUpTo N)
+    (le_trans h1 h2)
+
+/-- **The infimum over finite divisibility antichains is not attained.** -/
+theorem lambda_iInf_not_attained :
+    ∀ A ∈ FiniteAntichainFamily, Lambda < phaseIntegral A := by
+  rintro A ⟨N, hA⟩
+  exact lambda_lt_phaseIntegral_antichain hA
 
 end ProductInvariants
