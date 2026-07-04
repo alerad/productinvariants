@@ -1,16 +1,37 @@
 # Product-Integral Invariants
 
-Lean 4 formalization files accompanying the preprint
-*Product-Integral Invariants of Exponent Sets: Subset-Sum Algebra, Stability Bounds, and a Prime-Indexed Limit*.
+[![Lean](https://github.com/alerad/productinvariants/actions/workflows/lean.yml/badge.svg)](https://github.com/alerad/productinvariants/actions/workflows/lean.yml)
 
-The formalization covers the finite product-integral invariant
+Lean 4 formalization accompanying the paper
+*An extremal product integral over finite primitive sets*.
+
+The formalization covers the finite product-integral functional
 
 ```lean
-F_S = ∫ u in (0 : ℝ)..1, ∏ n ∈ S, (1 - u ^ n)
+F[S] = ∫ u in (0 : ℝ)..1, ∏ n ∈ S, (1 - u ^ n)
 ```
 
-and related monotonicity, subset-sum, directed-limit, prime-tail, signed-cube,
-and certified rational polynomial-integral results.
+and proves that the primes are extremal for `F` over finite primitive sets
+(divisibility antichains), together with the supporting monotonicity,
+directed-limit, prime-tail, and certified rational polynomial-integral results.
+
+## Main results
+
+- `lambda_eq_iInf_finiteAntichain` (`ProductInvariants/Finite/Antichain.lean`):
+  `Λ` is the infimum of `F` over all finite divisibility antichains.
+- `lambda_lt_phaseIntegral_antichain` (same file): the infimum is not attained.
+- `prime_phase_tail_bound` (`ProductInvariants/Prime/TailBound.lean`):
+  unconditional truncation tail bound.
+- `phaseMetricSpace`, `phaseEnergy_subadditive`
+  (`ProductInvariants/Finite/PhaseMetric.lean`): the submodular defect metric.
+- `Lambda_bounds_2003` (`ProductInvariants/Certified/LambdaHighPrecision.lean`):
+  exact rational sandwich certifying the first 26 decimal digits of `Λ`
+  (OEIS [A395518](https://oeis.org/A395518)).
+
+Axiom footprints are checkable with `#print axioms`: the metric and tail-bound
+results use only `propext`, `Classical.choice`, `Quot.sound`; the extremal
+theorem and the digit certificates additionally use `native_decide`
+(`Lean.ofReduceBool`), as detailed in the paper.
 
 ## Build
 
